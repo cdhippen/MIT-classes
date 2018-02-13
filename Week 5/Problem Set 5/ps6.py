@@ -234,18 +234,31 @@ class CiphertextMessage(Message):
         Returns: a tuple of the best shift value used to decrypt the message
         and the decrypted message text using that shift value
         '''
-        best = ()
-        for y in range(26):
-            i = self.apply_shift(-y)
-            message = ''
-            i = i.split()
-            if all(is_word(self.valid_words, x) for x in i):
-                message = ' '.join(i)
-                best = (y, message)
-                break
-            else:
-                message = ''
-        return best
+        messages = {}
+        words = self.message_text.split(' ')
+
+        for i in range(26):
+            msg_list = []
+            message = ' '
+            for x in words:
+                self.message_text = x
+                msg_list.append(self.apply_shift(i))
+            message = message.join(msg_list)
+            messages[i] = message
+
+        values = []
+
+        for y in range(len(words)):
+            for x, i in messages.items():
+                word_list = i.split(' ')
+                if is_word(self.valid_words, word_list[y]):
+                    values.append(x)
+
+        shift = max(set(values), key=values.count)
+        self.message_text = ' '.join(words)
+        decrypt = self.apply_shift(shift)
+
+        return shift, decrypt
 
 
 # Example test case (PlaintextMessage)
@@ -257,3 +270,12 @@ print('Actual Output:', plaintext.get_message_text_encrypted())
 ciphertext = CiphertextMessage('jgnnq')
 print('Expected Output:', (24, 'hello'))
 print('Actual Output:', ciphertext.decrypt_message())
+
+
+def decrypt_story():
+    x = CiphertextMessage(get_story_string())
+    print(x.decrypt_message())
+    return x.decrypt_message()
+
+
+decrypt_story()

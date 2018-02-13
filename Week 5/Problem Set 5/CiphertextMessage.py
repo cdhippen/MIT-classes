@@ -176,13 +176,15 @@ class CiphertextMessage(Message):
             for x, i in messages.items():
                 word_list = i.split(' ')
                 if is_word(self.valid_words, word_list[y]):
-                    words[y] = word_list[y]
                     values.append(x)
 
         shift = max(set(values), key=values.count)
-        decrypt = ' '.join(words)
+
+        self.message_text = ' '.join(words)
+        decrypt = self.apply_shift(shift)
+
         return shift, decrypt
 
 
-test = CiphertextMessage('Qrqvhqvh zrugv: Aqw, duh e ltti shuvrq!')
+test = CiphertextMessage('Stsxjsxj Btwix: Mjqqt, Btwqi!!')
 print(test.decrypt_message())
